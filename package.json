@@ -1,0 +1,23 @@
+{
+  "name": "node_caller",
+  "version": "1.0.0",
+  "description": "Calling App",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GURHARPARTAP-SINGH-DHALIWAL/Call-me-baby.git"
+  },
+  "author": "GSD",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GURHARPARTAP-SINGH-DHALIWAL/Call-me-baby/issues"
+  },
+  "homepage": "https://github.com/GURHARPARTAP-SINGH-DHALIWAL/Call-me-baby#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^2.0.13"
+  }
+}
