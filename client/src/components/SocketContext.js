@@ -1,7 +1,7 @@
 // Here All the logic for sockets is written
 import React,{ createContext,useState,useEffect,useRef}  from 'react';
 import {io} from 'socket.io-client';
-import SimplePeer from 'simple-peer';
+import Peer from 'simple-peer';
 
 // Connect to this server
 const socket=io("http://localhost:8000");
@@ -15,10 +15,15 @@ const ContextProvider = ({children}) => {
 
     // Stream will contain track of audio and video returned by navigator.getmedia
     const [stream,setStream]=useState(null);
-    const [id,setId]=useState('');
+    const [me,setMe]=useState('');
     const [call,setCall]=useState({});
+    const [callAccepted,setCallAccepted]=useState(false);
+    const [callEnded,setCallEnded]=useState(false);
+    const [name,setName]=useState('');
     // this hook is used to control a DOM element "Video here"
     const myVideo=useRef();
+    const userVideo=useRef();
+    const connectionRef=useRef();
 
 //    Alternative for componentdidmount so this is called immeditely after mounting of the component
     useEffect(()=>{
@@ -30,14 +35,65 @@ const ContextProvider = ({children}) => {
         });
 
         socket.on('me',(id)=>{
-            setId(id);
+            setMe(id);
         });
 
         socket.on('calluser',({from,name:callerName,signal})=>{
+            // When another user calls
             setCall({isReceived:true,from,name:callerName,signal});
         });
     },[]);
     //  pass dependencies else it will be called on every re render
+
+
+    // Answer the call
+   const answerCall=()=>{
+    //    So when we will call this first set callaccepted to true so we will not see that answer button
+    setCallAccepted(true);
+    const peer=new Peer({initiator:false,trickle:false,stream});
+    peer.on('signal',(data)=>{
+        // So when we will receive signal what should we so emit answercall
+        // Call was set initially by calluser action 
+        socket.emit("answercall",{signal:data,to:callAccepted.from});
+    });
+    // See first the connetion signal will be sent and then stream will be sent
+    peer.on('stream',currentStream=>{
+        userVideo.current.srcObject=currentStream;
+    });
+
+    // Now i will sognal too
+
+    peer.signal(call.signal);
+
+    connectionRef.current=peer;
+
+   };
+
+
+//    Make a Call
+   const callUser=(id)=>{
+  
+    const peer=new Peer({initiator:true,trickle:false,stream});
+    peer.on('signal',(data)=>{
+        // So when we will receive signal what should we so emit answercall
+        // Call was set initially by calluser action 
+        socket.emit("calluser",{userToVall:id,signal:data,from:me,name});
+    });
+    // See first the connetion signal will be sent and then stream will be sent
+    peer.on('stream',currentStream=>{
+        userVideo.current.srcObject=currentStream;
+    });
+
+    // Now i will sognal too
+
+    peer.signal(call.signal);
+
+    connectionRef.current=peer;
+
+   };
+
+
+   
 
 
 }
