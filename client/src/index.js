@@ -1,8 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './styles.css';
+import {ContextProvider} from './components/SocketContext';
 import App from './App';
 
 
 // Render App component in the root div
-ReactDOM.render(<App />,document.getElementById('root'));
+ReactDOM.render(
+    
+  <ContextProvider><App/></ContextProvider>
+   
+    
+    ,document.getElementById('root'));

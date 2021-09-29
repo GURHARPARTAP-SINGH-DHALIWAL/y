@@ -84,6 +84,12 @@ const ContextProvider = ({children}) => {
         userVideo.current.srcObject=currentStream;
     });
 
+    socket.on('callaccepted',(signal)=>{
+        setCallAccepted(true);
+        
+        peer.signal(signal);
+    });
+
     // Now i will sognal too
 
     peer.signal(call.signal);
@@ -93,11 +99,40 @@ const ContextProvider = ({children}) => {
    };
 
 
+   const leaveCall=()=>{
+       setCallEnded(true);
+       connectionRef.current.destroy();
+    
+        // So that id changes and other user cannot call immediately
+       window.location.reload();
+   };
+   return (
+    //    the data will be available to all the components
+       <SocketContext.Provider value={{
+            call,
+            callAccepted,
+            myVideo,
+            userVideo,
+            name,
+            stream,
+            setName,
+            callEnded,
+            me,
+            callUser,
+            leaveCall,
+            answerCall
+
+
+       }}>
+           {children}
+
+       </SocketContext.Provider>
+   );
    
 
 
 }
  
-export default ContextProvider;
+export default {ContextProvider,SocketContext};
 
 
